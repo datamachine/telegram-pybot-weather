@@ -39,9 +39,21 @@ class Weather:
 
     @property
     def icon(self):
-        return self.data["weather"][0]["icon"]
-        
-        
+        try:
+            return {
+                "01d": u'\U0001F31E',
+                "02d": u'\U000026C5',
+                "03d": u'\U00002601',
+                "03d": u'\U00002601',
+                "09d": u'\U0001F302',
+                "10d": u'\U00002614',
+                "11d": u'\U000026A1',
+                "13d": u'\U00002744',
+                "50d": u'\U0001F301'
+            }[self.data["weather"][0]["icon"]]
+        except:
+            return ""
+
 class OpenWeatherMap:
     def __init__(self, api_key, units="metric"):
         self.api_key = api_key
@@ -51,7 +63,7 @@ class OpenWeatherMap:
 
     def set_units(self, units):
         self.units = units
-    
+
     def _build_url(self, api_function, params):
         params["APPID"] = self.api_key
         params["units"] = self.units
@@ -59,7 +71,7 @@ class OpenWeatherMap:
         encoded_params = urllib.parse.urlencode(params)
 
         url = "{0}/{1}?{2}".format(self.api_key, api_function, encoded_params)
-    
+
         return url
 
     def _call_api_function(self, api_function, params):

@@ -31,11 +31,14 @@ class Weather:
 
     @property
     def temp(self):
-        return self.data['current_observatation']['temperature_string']
+        if self.units == 'imperial':
+            return self.data['current_observation']['temp_f']
+        else:
+            return self.data['current_observation']['temp_c']
 
     @property
     def description(self):
-        return self.data['current_observatation']['weather']
+        return self.data['current_observation']['weather']
 
     @property
     def icon(self):
@@ -59,7 +62,7 @@ class Weather:
                 'sunny': '\U0001F31E',
                 'tstorms': '\U000026A1',
                 'chancetstorms': '\U000026A1',
-            }[self.data['current_observatation']['icon']]
+            }[self.data['current_observation']['icon']]
         except:
             return ''
 
@@ -67,27 +70,27 @@ class Weather:
 class WeatherUnderground:
     def __init__(self, api_key, units='metric'):
         self.api_key = api_key
-        self.base_url = 'http://api.wunderground.com/api/{}/geolookup/conditions/q/'.format(self.api_key)
+        self.base_url = 'http://api.wunderground.com/api/{}/geolookup/conditions/q'.format(self.api_key)
         self.set_units(units)
 
     def set_units(self, units):
         self.units = units
 
     def _build_url(self, param):
-
+        param = urllib.parse.quote(param)
         url = '{0}/{1}.json'.format(self.base_url, param)
 
         return url
 
     def _call_api(self, param):
         url = self._build_url(param)
-
         with urllib.request.urlopen(url) as f:
             data = f.read().decode('utf-8')
             result = json.loads(data)
-
-            if 'results' in result: # We found more than one result, returning the first.
-                return self._call_api(result.['results'][0]['zmw'])
+            if 'results' in result['response']: # We found more than one result, returning the first.
+                return self._call_api(result['response']['results'][0]['zmw'])
+            else:
+                return result
 
         return None
 
@@ -98,12 +101,12 @@ class WeatherUnderground:
         return self._call_weather(city)
 
     def weather_data_by_coords(coords):
-        return Weather(self._call_weather('{0},{1}'.format(coords[0], coords[1]))
+        return Weather(self._call_weather('{0},{1}'.format(coords[0], coords[1])))
 
     def weather_data_by_zip(self, zipcode):
         return Weather(self._call_weather(zipcode), self.units)
 
-    def weather_data(self, city=None, city_id=None, coords=None, zipcode=None):
+    def weather_data(self, search=None, city=None, city_id=None, coords=None, zipcode=None):
         if city:
             return self.weather_data_by_city(city)
         elif city_id:
@@ -112,6 +115,8 @@ class WeatherUnderground:
             return self.weather_data_by_coords(coords)
         elif zipcode:
             return self.weather_data_by_zip(zipcode)
+        elif search:
+            return self._call_weather(search)
 
         return None
 

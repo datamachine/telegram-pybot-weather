@@ -1,21 +1,10 @@
 import plugintypes
 import sys
 
-sys.path.append('./plugins')
+sys.path.append('./plugins.repos/telegram-pybot-weather') # TODO Ugly Hack, find a better way
 
 from py3owm import OpenWeatherMap
-
-OWM_icon_emoji_map = {
-    "01d": u'\U0001F31E',
-    "02d": u'\U000026C5',
-    "03d": u'\U00002601',
-    "03d": u'\U00002601',
-    "09d": u'\U0001F302',
-    "10d": u'\U00002614',
-    "11d": u'\U000026A1',
-    "13d": u'\U00002744',
-    "50d": u'\U0001F301'
-}
+from py3wu import WeatherUnderground
 
 class WeatherPlugin(plugintypes.TelegramPlugin):
     """
@@ -23,11 +12,11 @@ class WeatherPlugin(plugintypes.TelegramPlugin):
     """
 
     patterns = [
-        "^!weather? ([0-9]{5})"
+        "^!weather? ([0-9]{5}|.*)",
     ]
 
     usage = [
-        "!weather <zip code>"
+        "!weather location"
     ]
 
     def activate_plugin(self):
@@ -35,37 +24,33 @@ class WeatherPlugin(plugintypes.TelegramPlugin):
             self.write_option("api key", "")
         if not self.has_option("units"):
             self.write_option("units", "imperial")
-        if not self.has_option("units"):
+        if not self.has_option("backend"):
             self.write_option("backend", "openweathermap")
 
         api_key = self.read_option("api key")
         units = self.read_option("units")
 
         if self.read_option("backend") == "openweathermap":
-            self.owm = OpenWeatherMap(api_key, units)
-        elif self.read_option("backend") == "wunderground":
+            self.backend = OpenWeatherMap(api_key, units)
+        elif self.read_option("backend") == "weatherunderground":
             if api_key == "":
-                raise Exception("Wunderground requires an API Key")
-            self.wunderground = Wunderground(api_key, units)
-
-    def __get_emoji(self, icon):
-        if self.read_option("backend") == "openweathermap":
-            if icon in OWM_icon_emoji_map.keys():
-                return OWM_icon_emoji_map[icon]
-            return u'\U00002610'
-        elif:
-            return u'\U00002610'
-
+                raise Exception("Weather Underground requires an API Key")
+            self.backend = WeatherUnderground(api_key, units)
+        else:
+            raise Exception("Invalid backend selected")
 
     def run(self, msg, matches):
-        if self.read_option("backend") == "openweathermap":
-            w = self.owm.weather_data(zipcode=matches.group(1))
+        try:
+            if self.read_option("backend") == "wunderground":
+                w = self.backend.weather_data(search=matches.group(1))
+            else:
+                w = self.backend.weather_data(zipcode=matches.group(1))
             if w:
-                emoji = self.__get_emoji(w.icon)
-                report = u"{} ({}) {}{}\n{} {}".format(w.name, w.country, w.temp, w.unit_symbol, w.description, emoji)
+                report = u"{} ({}) {}{}\n{} {}".format(w.name, w.country, w.temp,
+                                                       w.unit_symbol, w.description, w.icon)
                 return report
-        elif self.read_option("backend") == "wunderground":
-            pass
+        except Exception as e:
+            print("Exception {}".format(e))
 
         return "Error getting weather data"
 
