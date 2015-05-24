@@ -1,0 +1,8 @@
+{
+    "name": "Weather",
+    "description": "Display the current weather conditions",
+    "version": "1.1",
+    "homepage": "https://github.com/datamachine/telegram-pybot-weather",
+    "repo": "https://github.com/datamachine/telegram-pybot-weather.git",
+    "branch": "master"
+}
