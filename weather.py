@@ -1,7 +1,8 @@
 import plugintypes
 import sys
+import os
 
-sys.path.append('./plugins.repos/telegram-pybot-weather') # TODO Ugly Hack, find a better way
+sys.path.append(os.path.dirname(os.path.abspath(__file__))) # TODO Ugly Hack, find a better way
 
 from py3owm import OpenWeatherMap
 from py3wu import WeatherUnderground
