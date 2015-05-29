@@ -20,15 +20,21 @@ class WeatherPlugin(plugintypes.TelegramPlugin):
         "!weather location"
     ]
 
+    config_options = {
+        "api_key": "API key for applicable backends",
+        "units": "Units to return (F/C) as imperial/metric",
+        "backend": "Data source, currently supporting openweathermap and weatherunderground (api_key required)",
+    }
+
     def activate_plugin(self):
-        if not self.has_option("api key"):
-            self.write_option("api key", "")
+        if not self.has_option("api_key"):
+            self.write_option("api_key", "")
         if not self.has_option("units"):
             self.write_option("units", "imperial")
         if not self.has_option("backend"):
             self.write_option("backend", "openweathermap")
 
-        api_key = self.read_option("api key")
+        api_key = self.read_option("api_key")
         units = self.read_option("units")
 
         if self.read_option("backend") == "openweathermap":
