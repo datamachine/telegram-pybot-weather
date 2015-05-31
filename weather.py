@@ -1,13 +1,13 @@
-import plugintypes
 import sys
 import os
+from telegrambot import plugin
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__))) # TODO Ugly Hack, find a better way
 
 from py3owm import OpenWeatherMap
 from py3wu import WeatherUnderground
 
-class WeatherPlugin(plugintypes.TelegramPlugin):
+class WeatherPlugin(plugin.TelegramPlugin):
     """
     Weather
     """
