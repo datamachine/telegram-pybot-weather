@@ -1,5 +1,6 @@
 import sys
 import os
+from telegrambot import plugin
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__))) # TODO Ugly Hack, find a better way
 
