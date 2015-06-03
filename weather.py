@@ -1,14 +1,14 @@
 import sys
 import os
-from telegrambot import plugin
+from telex import plugin
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__))) # TODO Ugly Hack, find a better way
 
-from telegrambot import plugin
+from telex import plugin
 from py3owm import OpenWeatherMap
 from py3wu import WeatherUnderground
 
-class WeatherPlugin(plugin.TelegramPlugin):
+class WeatherPlugin(plugin.TelexPlugin):
     """
     Weather
     """
