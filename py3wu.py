@@ -30,6 +30,10 @@ class Weather:
         return self.data['location']['country']
 
     @property
+    def humidity(self):
+        return self.data['current_observation']['relative_humidity']
+
+    @property
     def temp(self):
         if self.units == 'imperial':
             return self.data['current_observation']['temp_f']

@@ -14,11 +14,11 @@ class WeatherPlugin(plugin.TelexPlugin):
     """
 
     patterns = [
-        "^!weather? ([0-9]{5}|.*)",
+        "^{prefix}weather? ([0-9]{5}|.*)",
     ]
 
     usage = [
-        "!weather location"
+        "{prefix}weather location"
     ]
 
     config_options = {
@@ -54,8 +54,9 @@ class WeatherPlugin(plugin.TelexPlugin):
             else:
                 w = self.backend.weather_data(zipcode=matches.group(1))
             if w:
-                report = u"{} ({}) {}{}\n{} {}".format(w.name, w.country, w.temp,
-                                                       w.unit_symbol, w.description, w.icon)
+                report = u"{} ({}) {}{}\n{} {} ({} Relative Humidity)".format(w.name, w.country, w.temp,
+                                                                              w.unit_symbol, w.description, w.icon, w.humidity)
+
                 return report
         except Exception as e:
             print("Exception {}".format(e))
